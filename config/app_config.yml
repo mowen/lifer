@@ -1,0 +1,6 @@
+twitter:
+  endpoint: http://twitter.com/statuses/user_timeline/#{userid}.rss
+lastfm:
+  endpoint: http://ws.audioscrobbler.com/1.0/user/#{username}/recenttracks.rss
+delicious:
+  endpoint: http://feeds.delicious.com/v2/rss/#{username}?count=15
