@@ -1,6 +1,7 @@
 <% items.each do |item| %>
-<h3><a href="<%= item.link %>" title="<%= item.title %>"><%= item.title %></a></h3>
-<p>
-  <%= item.description %>
-</p>
+<li>
+  <span class="post-date"><%= item.pubDate.strftime("%d/%m/%Y %H:%M") %></span>
+  <a href="<%= item.link %>" title="<%= item.title %>"><%= item.title %></a>
+  <p><%= item.description %></p>
+</li>
 <% end %>

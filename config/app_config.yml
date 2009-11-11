@@ -1,6 +1,15 @@
 twitter:
   endpoint: http://twitter.com/statuses/user_timeline/#{userid}.rss
+  type: rss
 lastfm:
   endpoint: http://ws.audioscrobbler.com/1.0/user/#{username}/recenttracks.rss
+  type: rss
 delicious:
   endpoint: http://feeds.delicious.com/v2/rss/#{username}?count=15
+  type: rss
+github:
+  endpoint: http://github.com/#{username}.atom
+  type: atom
+stackoverflow:
+  endpoint: http://stackoverflow.com/feeds/user/#{userid}
+  type: atom
