@@ -1,14 +1,31 @@
 require "erb"
 require "open-uri"
+require "rubygems"
 require "simple-rss"
 require "yaml"
+
+# Useful metaprogramming functions
+# TODO: use OpenStruct instead
+class Object
+  def define_attribute(name, value)
+    metaclass.send :attr_accessor, name
+    send "#{name}=".to_sym, value
+  end
+
+  private
+    def metaclass
+      class << self
+        self
+      end
+    end
+end
 
 module Lifer
  
   class Lifer::Feed
     
-    def initialize(name, endpoint, user_config)
-      @name, unexpanded_endpoint = name, endpoint
+    def initialize(name, feed_config, user_config)
+      @name, @feed_config = name, feed_config
 
       assignments = ""
       user_config.each do |k,v|
@@ -16,7 +33,7 @@ module Lifer
       end
       eval(assignments)
       
-      @endpoint = eval('"' + unexpanded_endpoint + '"')
+      @endpoint = eval('"' + @feed_config["endpoint"] + '"')
     end
     
     def get
@@ -25,6 +42,15 @@ module Lifer
         rss_feed = raw_feed.read
       end
       rss_content = SimpleRSS.parse(rss_feed)
+      normalize_feed(rss_content)
+    end
+
+    def normalize_feed(rss_content)
+      if @feed_config["type"] == "atom"
+        rss_content.items.each do |item|
+          item.define_attribute(:pubDate, item.published)
+        end
+      end
       rss_content
     end
     
@@ -82,7 +108,7 @@ module Lifer
         APP_CONFIG.each do |feed_name, config|
           user_config = USER_CONFIG["feeds"][feed_name]
           unless user_config.nil?
-            feed = Lifer::Feed.new(feed_name, config["endpoint"], user_config)
+            feed = Lifer::Feed.new(feed_name, config, user_config)
             stream.concat(feed.get.items)
           end
         end
