@@ -1,5 +1,5 @@
 <% items.each_with_index do |item, index| %>
-<% css_class = ((index + 1) % 4 == 0) ? "last-post-box" : "post-box" %>
+<% css_class = ((index + 1) % 5 == 0) ? "last-post-box" : "post-box" %>
 <div class="<%= css_class %>">
   <span class="post-date"><%= item.pubDate.strftime("%d/%m/%Y %H:%M") %></span>
   <br />
