@@ -1,6 +1,7 @@
-require "erb"
-require "open-uri"
 require "rubygems"
+require "erb"
+require "htmlentities"
+require "open-uri"
 require "simple-rss"
 require "yaml"
 
@@ -34,6 +35,8 @@ module Lifer
       eval(assignments)
       
       @endpoint = eval('"' + @feed_config["endpoint"] + '"')
+
+      @html_decoder = HTMLEntities.new
     end
     
     def get
@@ -49,11 +52,12 @@ module Lifer
       if @feed_config["type"] == "atom"
         rss_content.items.each do |item|
           item.define_attribute(:pubDate, item.published)
+          item.define_attribute(:description, @html_decoder.decode(item.content))
         end
       end
       rss_content
     end
-    
+
   end
 
   # TODO: Is there a better name for this class?
@@ -63,13 +67,13 @@ module Lifer
 
     class << self
       def render(items)
-        filename = File.join("templates", "default_items.rhtml")
+        filename = File.join(File.dirname(__FILE__), "templates", "default_items.rhtml")
         content = render_erb_template(filename, binding)
         wrap_feed(content)
       end
       
       def wrap_feed(content)
-        filename = File.join("templates", "default_wrapper.rhtml")
+        filename = File.join(File.dirname(__FILE__), "templates", "default_wrapper.rhtml")
         output = render_erb_template(filename, binding)
         string_to_file(output, OUTPUT_FILENAME)
       end
@@ -98,8 +102,8 @@ module Lifer
     NUM_OF_RESULTS = 20
    
     class << self 
-      APP_CONFIG = YAML.load_file(File.join("config", "app_config.yml"))
-      USER_CONFIG = YAML.load_file(File.join("config", "config.yml"))
+      APP_CONFIG = YAML.load_file(File.join(File.dirname(__FILE__), "config", "app_config.yml"))
+      USER_CONFIG = YAML.load_file(File.join(File.dirname(__FILE__), "config", "config.yml"))
       
       def generate
         content = ""

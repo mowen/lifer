@@ -1,7 +1,14 @@
-<% items.each do |item| %>
-<li>
+<% items.each_with_index do |item, index| %>
+<% css_class = ((index + 1) % 4 == 0) ? "last-post-box" : "post-box" %>
+<div class="<%= css_class %>">
   <span class="post-date"><%= item.pubDate.strftime("%d/%m/%Y %H:%M") %></span>
+  <br />
   <a href="<%= item.link %>" title="<%= item.title %>"><%= item.title %></a>
-  <p><%= item.description %></p>
-</li>
+  <p class="post-summary">
+    <%= item.description %>
+  </p>
+</div>
+<% if css_class == "last-post-box" %>
+<hr />
+<% end %>
 <% end %>
